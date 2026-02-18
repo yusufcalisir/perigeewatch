@@ -46,6 +46,18 @@ def root_health_check():
 def health_check():
     return {"status": "ok"}
 
+# ── Auto-create tables on startup ─────────────────────────
+@app.on_event("startup")
+def on_startup():
+    """Create database tables if they don't exist (safe for fresh Neon DBs)."""
+    from app.db.base import Base  # noqa — imports all models
+    from app.db.session import engine
+    try:
+        Base.metadata.create_all(bind=engine)
+        logger.info("Database tables verified/created successfully.")
+    except Exception as e:
+        logger.error(f"Failed to create database tables: {e}")
+
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
 @app.get("/{file_path:path}")
