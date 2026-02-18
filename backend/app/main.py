@@ -1,4 +1,4 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request, Response
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from app.core.config import settings
 from app.api.api import api_router
 from fastapi.middleware.cors import CORSMiddleware
@@ -76,7 +76,7 @@ app.add_middleware(
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 @app.get("/")
-def health_check():
+def root_health_check():
     """Safe health check independent of database."""
     return {"status": "ok", "service": "PerigeeWatch API"}
 
