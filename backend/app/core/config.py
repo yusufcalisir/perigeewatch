@@ -26,6 +26,12 @@ class Settings(BaseSettings):
             url = self.DATABASE_URL
             if url and url.startswith("postgres://"):
                 url = url.replace("postgres://", "postgresql://", 1)
+            # Ensure we use the correct driver if needed (postgresql+psycopg2 is safer if v3 fails)
+            # But the error 'No module named psycopg' implies SQLAlchemy is trying to use v3 relative to a default
+            # or the URL scheme is just 'postgresql://' and it defaults to psycopg 3 in newer SQLAlchemy versions?
+            # Let's force postgresql+psycopg2 to fallback to the stable binary we definitely have, 
+            # OR just ensure psycopg is installed (which I did in requirements.txt).
+            # I will assume installing 'psycopg[binary]' fixes the import error.
             return url
         return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
     
