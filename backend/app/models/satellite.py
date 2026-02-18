@@ -16,7 +16,7 @@ class Satellite(Base):
     name = Column(String, index=True)
     int_designator = Column(String, index=True)
     object_type = Column(Enum(ObjectType), default=ObjectType.UNKNOWN)
-    is_active = Column(Boolean, default=True)
+    is_active = Column(Boolean, default=True, index=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Owner/Operator metadata (UCS Satellite DB fields)

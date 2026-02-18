@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api/v1';
+import { API_URL, WS_URL } from './config';
 
 export interface Satellite {
     norad_id: number;
@@ -69,12 +68,7 @@ export const connectToPositionStream = (
     onMessage: (data: Position[]) => void,
     interval: number = 2
 ): WebSocket => {
-    let wsUrl = API_URL.replace('http', 'ws');
-    if (wsUrl.endsWith('/api/v1')) {
-        wsUrl = wsUrl.replace('/api/v1', '/ws/positions');
-    } else {
-        wsUrl = wsUrl + '/ws/positions';
-    }
+    let wsUrl = WS_URL;
 
     console.log(`Connecting to WebSocket: ${wsUrl}`);
     const ws = new WebSocket(wsUrl);

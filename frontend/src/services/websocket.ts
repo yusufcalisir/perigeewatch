@@ -3,7 +3,7 @@
  * Connects to ws://localhost:3001/ws/positions
  */
 
-const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:3001/ws/positions';
+import { WS_URL } from './config';
 
 export interface WSPositionData {
     norad_id: number;

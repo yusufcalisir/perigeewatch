@@ -66,6 +66,7 @@ function AppContent() {
 
     // ── Watchlist ──
     const { watchlist, toggleWatchlist } = useWatchlist()
+    const memoizedWatchlist = useMemo(() => new Set(watchlist), [watchlist])
 
     // ── Notifications ──
     const {
@@ -195,7 +196,7 @@ function AppContent() {
 
     useEffect(() => {
         const loadSatellites = async () => {
-            const data = await fetchSatellites(15000)
+            const data = await fetchSatellites(2000)
             setSatellites(data)
         }
         loadSatellites()
@@ -418,7 +419,7 @@ function AppContent() {
                                         </p>
                                     </div>
                                 ) : (
-                                    filteredSatellites.map(sat => (
+                                    filteredSatellites.slice(0, 500).map(sat => (
                                         <SatelliteListItem
                                             key={sat.norad_id}
                                             id={sat.norad_id.toString()}
@@ -428,6 +429,13 @@ function AppContent() {
                                             onClick={() => handleSatelliteClick(sat.norad_id)}
                                         />
                                     ))
+                                )}
+                                {filteredSatellites.length > 500 && (
+                                    <div className="px-4 py-2 text-center border-t border-white/5">
+                                        <p className="text-[8px] text-white/20 font-mono uppercase">
+                                            + {filteredSatellites.length - 500} more matches (Refine search)
+                                        </p>
+                                    </div>
                                 )}
                             </div>
                         </ControlPanel>
@@ -583,7 +591,7 @@ function AppContent() {
                 filterPreset={activeFilter}
                 debrisFragments={debrisFragments}
                 showHeatmap={showHeatmap}
-                watchedNoradIds={new Set(watchlist)}
+                watchedNoradIds={memoizedWatchlist}
                 flyToTarget={flyToTarget}
                 onSelectSat={(sat) => {
                     if (sat) {
@@ -601,7 +609,7 @@ function AppContent() {
             />
 
             {/* Toolbar (top-right) */}
-            <div className="absolute top-16 right-4 z-40 flex gap-2">
+            <div className="absolute top-16 right-4 z-[60] flex gap-2 pointer-events-auto">
                 <button
                     onClick={() => { setShowWatchlist(!showWatchlist); if (soundEnabled) playClick() }}
                     className={clsx(
@@ -712,7 +720,7 @@ function AppContent() {
             {/* Launch Timeline (bottom-centered, limited to 3 cards visible) */}
             {showLaunches && (
                 <div className={clsx(
-                    "absolute bottom-4 left-1/2 -translate-x-1/2 z-30 w-full max-w-[620px] px-4 pointer-events-none transition-opacity duration-300",
+                    "absolute bottom-4 left-1/2 -translate-x-1/2 z-30 w-full max-w-[calc(100%-2rem)] md:max-w-[640px] px-4 pointer-events-none transition-opacity duration-300",
                     leftOpen ? "opacity-0 invisible md:opacity-100 md:visible" : "opacity-100 visible"
                 )}>
                     <div className="bg-panel/40 backdrop-blur-md border border-white/5 rounded-lg p-2 pointer-events-auto shadow-2xl">

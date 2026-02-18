@@ -34,7 +34,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         <div className="fixed inset-0 w-screen h-screen bg-background overflow-hidden text-white font-sans selection:bg-cyber-blue/30 flex flex-col md:block">
             {/* Globe Layer */}
             <div className={cn(
-                "relative md:absolute inset-0 z-0 transition-all duration-500 ease-in-out",
+                "relative md:absolute inset-0 transition-all duration-500 ease-in-out",
                 (leftOpen || rightOpen) && !isMaximized ? "h-[40vh] md:h-full" : "h-full"
             )}>
                 {children}

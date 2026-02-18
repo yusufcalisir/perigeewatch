@@ -81,9 +81,20 @@ const CesiumViewer: React.FC<CesiumViewerProps> = ({
 
     const [selectedSat, setSelectedSat] = useState<Position | null>(null);
     const latestPositionsRef = useRef<Position[]>([]);
+    const watchedIdsRef = useRef(watchedNoradIds);
     const [heatmapTrigger, setHeatmapTrigger] = useState(0); // Force heatmap update
+    const showHeatmapRef = useRef(showHeatmap);
     const cinematicTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const cinematicIndexRef = useRef<number>(0);
+
+    // Sync ref with prop
+    useEffect(() => {
+        showHeatmapRef.current = showHeatmap;
+        watchedIdsRef.current = watchedNoradIds;
+        if (showHeatmap) {
+            setHeatmapTrigger(prev => prev + 1);
+        }
+    }, [showHeatmap, watchedNoradIds]);
 
     // Ground station constants (Ankara)
     const GS_LAT = 39.9334;
@@ -160,13 +171,18 @@ const CesiumViewer: React.FC<CesiumViewerProps> = ({
         const handler = new ScreenSpaceEventHandler(viewer.scene.canvas);
         handler.setInputAction((click: any) => {
             const pickedObject = viewer.scene.pick(click.position);
-            if (pickedObject && pickedObject.primitive && pickedObject.id) {
+            // Robust check: Only proceed if picked object has a valid Position identity (norad_id)
+            if (pickedObject && pickedObject.id && typeof pickedObject.id === 'object' && 'norad_id' in pickedObject.id) {
                 const sat = pickedObject.id as Position;
                 setSelectedSat(sat);
                 if (onSelectSat) onSelectSat(sat);
             } else {
-                setSelectedSat(null);
-                if (onSelectSat) onSelectSat(null);
+                // Ignore clicks on heatmap or orbit lines for selection purposes
+                // Or if you want to DESELECT when clicking empty space:
+                if (!pickedObject) {
+                    setSelectedSat(null);
+                    if (onSelectSat) onSelectSat(null);
+                }
             }
         }, ScreenSpaceEventType.LEFT_CLICK);
 
@@ -179,6 +195,7 @@ const CesiumViewer: React.FC<CesiumViewerProps> = ({
                     const destination = Cartesian3.fromDegrees(sat.lon, sat.lat, sat.alt * 1000 + 500000);
                     viewerRef.current.camera.flyTo({ destination, duration: 1.5 });
                     setSelectedSat(sat);
+                    if (onSelectSat) onSelectSat(sat);
                 }
             };
         }
@@ -271,7 +288,13 @@ const CesiumViewer: React.FC<CesiumViewerProps> = ({
         const orbitId = "selected-sat-orbit";
         viewer.entities.removeById(orbitId);
 
-        if (selectedSat) {
+        // Validation: Ensure selectedSat exists and has valid numerical coordinates
+        if (selectedSat &&
+            typeof selectedSat.lat === 'number' &&
+            typeof selectedSat.lon === 'number' &&
+            !isNaN(selectedSat.lat) &&
+            !isNaN(selectedSat.lon)
+        ) {
             // 1. Orbit Path (Past + Future)
             fetchSatelliteOrbit(selectedSat.norad_id, 90, 90).then((orbitPoints: OrbitPoint[]) => {
                 if (!orbitPoints || orbitPoints.length === 0) return;
@@ -393,7 +416,7 @@ const CesiumViewer: React.FC<CesiumViewerProps> = ({
             const position = Cartesian3.fromDegrees(sat.lon, sat.lat, sat.alt * 1000);
             const eclipsed = isEclipsed(position, sunPos);
 
-            const isWatched = watchedNoradIds?.has(sat.norad_id);
+            const isWatched = watchedIdsRef.current?.has(sat.norad_id);
             points.add({
                 position,
                 color: isWatched
@@ -407,10 +430,10 @@ const CesiumViewer: React.FC<CesiumViewerProps> = ({
         // Trigger heatmap update occasionally (every 100 frames approx, or just when data size changes significantly)
         // Since this runs on WS stream, we can just throttle it.
         // Simple throttle: check if we should update heatmap
-        if (showHeatmap && Math.random() < 0.05) { // ~5% chance per update (approx every few seconds)
+        if (showHeatmapRef.current && Math.random() < 0.05) { // ~5% chance per update (approx every few seconds)
             setHeatmapTrigger(prev => prev + 1);
         }
-    }, [watchedNoradIds, getSatColor, showHeatmap]);
+    }, [getSatColor]);
 
     // ═══════════════════════════════════════════════════
     // Density Heatmap Layer (uses REAL positions)
@@ -458,7 +481,7 @@ const CesiumViewer: React.FC<CesiumViewerProps> = ({
                         cell.lonMin, cell.latMin, cell.lonMax, cell.latMax
                     ),
                     material: cesiumColor,
-                    height: 0,
+                    height: 500, // Elevated to prevent Z-fighting with surface
                     outline: false,
                 },
             });

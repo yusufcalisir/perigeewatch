@@ -82,7 +82,7 @@ const LaunchTimeline: React.FC<LaunchTimelineProps> = ({ onLaunchSelect }) => {
                     <div
                         key={launch.id}
                         onClick={() => onLaunchSelect && onLaunchSelect(launch)}
-                        className={`flex-shrink-0 w-[calc(100vw-3.5rem)] xs:w-48 bg-black/20 border border-white/5 rounded p-1.5 transition-all duration-200 group relative overflow-hidden snap-center ${onLaunchSelect ? 'cursor-pointer hover:bg-white/5 hover:border-cyber-blue/50 hover:shadow-[0_0_10px_rgba(0,243,255,0.1)]' : ''}`}
+                        className={`flex-shrink-0 w-[calc(100vw-4rem)] md:w-48 bg-black/20 border border-white/5 rounded p-1.5 transition-all duration-200 group relative overflow-hidden snap-center ${onLaunchSelect ? 'cursor-pointer hover:bg-white/5 hover:border-cyber-blue/50 hover:shadow-[0_0_10px_rgba(0,243,255,0.1)]' : ''}`}
                     >
                         {/* Hover Effect Highlight */}
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-shimmer" />

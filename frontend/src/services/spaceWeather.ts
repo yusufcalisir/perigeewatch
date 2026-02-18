@@ -48,7 +48,7 @@ function getStormScale(kp: number): { level: string; color: string; label: strin
 export { getStormScale };
 
 // ── Combined Fetch ──
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1';
+import { API_URL } from './config';
 
 export async function fetchAllSpaceWeather(): Promise<SpaceWeatherData> {
     try {

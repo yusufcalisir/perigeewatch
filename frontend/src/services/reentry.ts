@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1';
+import { API_URL } from './config';
 
 export interface ReentryCandidate {
     norad_id: number;
