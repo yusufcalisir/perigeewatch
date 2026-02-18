@@ -1,9 +1,14 @@
+import json
+from datetime import datetime
+from typing import Any, List, Optional
+
+import redis
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
+
+from app.core.config import settings
 from app.db.session import SessionLocal
 from app.services.conjunction import detect_conjunctions
-from datetime import datetime
-from typing import Optional, List, Any
 
 router = APIRouter()
 
@@ -16,9 +21,7 @@ def get_db():
         db.close()
 
 
-import redis
-import json
-from app.core.config import settings
+# Initialize Redis client
 
 # Initialize Redis client
 redis_client = redis.Redis(
