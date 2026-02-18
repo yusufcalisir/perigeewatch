@@ -1,0 +1,16 @@
+.env
+frontend/.env
+node_modules
+dist
+__pycache__
+*.pyc
+.DS_Store
+
+# Logs and Debug
+*.log
+debug_*.py
+debug_*.txt
+celerybeat-schedule.*
+
+# Backend node_modules
+backend/node_modules

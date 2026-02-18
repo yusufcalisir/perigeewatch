@@ -1,0 +1,99 @@
+services:
+  backend:
+    build: ./backend
+    restart: always
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    volumes:
+      - ./backend:/app
+    environment:
+      - POSTGRES_HOST=db
+      - REDIS_HOST=redis
+      - POSTGRES_USER=perigee
+      - POSTGRES_PASSWORD=secure_password
+      - POSTGRES_DB=perigee_watch
+      - JWT_SECRET=${JWT_SECRET:-perigee-watch-change-me}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+
+  worker:
+    build: ./backend
+    command: celery -A app.worker.celery_app worker --loglevel=info
+    restart: always
+    volumes:
+      - ./backend:/app
+    environment:
+      - POSTGRES_HOST=db
+      - REDIS_HOST=redis
+      - POSTGRES_USER=perigee
+      - POSTGRES_PASSWORD=secure_password
+      - POSTGRES_DB=perigee_watch
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  beat:
+    build: ./backend
+    command: celery -A app.worker.celery_app beat --loglevel=info
+    restart: always
+    volumes:
+      - ./backend:/app
+    environment:
+      - POSTGRES_HOST=db
+      - REDIS_HOST=redis
+      - POSTGRES_USER=perigee
+      - POSTGRES_PASSWORD=secure_password
+      - POSTGRES_DB=perigee_watch
+    depends_on:
+      - worker
+
+  frontend:
+    build: ./frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://backend:8000/api/v1
+      - VITE_WS_URL=ws://backend:8000/ws
+    depends_on:
+      - backend
+
+  db:
+    image: timescale/timescaledb-ha:pg15-latest
+    restart: always
+    environment:
+      POSTGRES_USER: perigee
+      POSTGRES_PASSWORD: secure_password
+      POSTGRES_DB: perigee_watch
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U perigee" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  redis_data:

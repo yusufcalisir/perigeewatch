@@ -1,0 +1,237 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════════
+   Theme System — Dark / Light
+   ═══════════════════════════════════════════════════ */
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg-primary: #0B0E14;
+  --bg-panel: rgba(11, 14, 20, 0.85);
+  --bg-surface: rgba(255, 255, 255, 0.03);
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.6);
+  --text-muted: rgba(255, 255, 255, 0.3);
+  --border-primary: rgba(255, 255, 255, 0.1);
+  --border-active: rgba(0, 209, 255, 0.4);
+  --accent-blue: #00D1FF;
+  --accent-red: #FF3B30;
+  --accent-green: #00FF88;
+  --accent-yellow: #FFB800;
+  --accent-orange: #FF9500;
+  --shadow-glow: rgba(0, 209, 255, 0.1);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --bg-primary: #F0F2F5;
+  --bg-panel: rgba(255, 255, 255, 0.92);
+  --bg-surface: rgba(0, 0, 0, 0.03);
+  --text-primary: #1A1D23;
+  --text-secondary: rgba(0, 0, 0, 0.6);
+  --text-muted: rgba(0, 0, 0, 0.35);
+  --border-primary: rgba(0, 0, 0, 0.1);
+  --border-active: rgba(0, 120, 200, 0.4);
+  --accent-blue: #0078C8;
+  --accent-red: #D42020;
+  --accent-green: #00A055;
+  --accent-yellow: #C88B00;
+  --accent-orange: #D07000;
+  --shadow-glow: rgba(0, 120, 200, 0.1);
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  overflow: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#root {
+  width: 100%;
+  height: 100vh;
+}
+
+/* ═══════════════════════════════════════════════════
+   Custom Scrollbars
+   ═══════════════════════════════════════════════════ */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 209, 255, 0.3);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 209, 255, 0.5);
+}
+
+/* ═══════════════════════════════════════════════════
+   Orbit Trail Glow Animation
+   ═══════════════════════════════════════════════════ */
+@keyframes orbit-glow {
+
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.orbit-trail {
+  animation: orbit-glow 3s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════
+   Sensor FOV Pulse
+   ═══════════════════════════════════════════════════ */
+@keyframes fov-pulse {
+
+  0%,
+  100% {
+    opacity: 0.04;
+  }
+
+  50% {
+    opacity: 0.08;
+  }
+}
+
+.fov-cone {
+  animation: fov-pulse 4s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════
+   Cinematic Mode Recording Dot
+   ═══════════════════════════════════════════════════ */
+@keyframes rec-blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+.rec-dot {
+  animation: rec-blink 1s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════
+   Space Weather Severity Bar Animation
+   ═══════════════════════════════════════════════════ */
+@keyframes severity-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 4px currentColor;
+  }
+
+  50% {
+    box-shadow: 0 0 12px currentColor;
+  }
+}
+
+.severity-bar-active {
+  animation: severity-glow 2s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════
+   Launch Timeline Horizontal Scroll
+   ═══════════════════════════════════════════════════ */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 209, 255, 0.2) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  height: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(0, 209, 255, 0.2);
+  border-radius: 2px;
+}
+
+/* ═══════════════════════════════════════════════════
+   Keyboard Shortcut Badges
+   ═══════════════════════════════════════════════════ */
+.kbd-badge {
+  @apply px-1 py-0.5 bg-white/5 border border-white/10 rounded text-[8px] font-mono text-white/20;
+}
+
+/* ═══════════════════════════════════════════════════
+   Debris Cloud Point Glow
+   ═══════════════════════════════════════════════════ */
+@keyframes debris-float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-1px);
+  }
+}
+
+.debris-point {
+  animation: debris-float 5s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════
+   Slide-in Animations for Panels
+   ═══════════════════════════════════════════════════ */
+@keyframes slide-in-from-bottom {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-bottom {
+  animation: slide-in-from-bottom 0.3s ease-out;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}

@@ -1,0 +1,16 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+alembic
+psycopg2-binary
+pydantic-settings
+requests
+sgp4
+celery
+redis
+python-dotenv
+httpx
+numpy<2
+websockets
+torch --index-url https://download.pytorch.org/whl/cpu
+slowapi
