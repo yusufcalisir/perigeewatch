@@ -1,7 +1,7 @@
 import httpx
 import logging
 import asyncio
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 logger = logging.getLogger(__name__)
 

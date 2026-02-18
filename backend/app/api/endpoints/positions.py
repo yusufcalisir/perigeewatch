@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.db.session import SessionLocal
 from app.models.satellite import Satellite
 from app.models.tle import TLE
 from app.services.propagation import get_position_at, propagate_batch
 from datetime import datetime
-from typing import Optional, List, Dict, Any, Union
+from typing import Optional, List
 from pydantic import BaseModel
 
 router = APIRouter()

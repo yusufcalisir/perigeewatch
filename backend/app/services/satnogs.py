@@ -7,7 +7,7 @@ https://db.satnogs.org/
 
 import requests
 import logging
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from sqlalchemy.orm import Session
 from app.models.satellite import Satellite
 from app.models.transponder import Transponder

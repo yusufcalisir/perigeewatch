@@ -17,7 +17,7 @@ from app.services.monte_carlo import compute_collision_probability
 from app.services.anomaly import detect_anomalies
 from app.services.rk4_propagator import propagate_rk4
 from app.services.owner_data import get_satellite_profile
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Optional
 
 router = APIRouter()
@@ -116,7 +116,9 @@ def get_ml_anomaly_analysis(
     to detect complex pattern deviations not visible to statistical methods.
     """
     try:
-        import torch
+        import importlib.util
+        if importlib.util.find_spec("torch") is None:
+            raise ImportError
     except ImportError:
         raise HTTPException(501, "PyTorch not installed on server.")
 

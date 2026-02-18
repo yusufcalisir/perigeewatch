@@ -8,9 +8,9 @@ Uses real TLE data and SGP4 propagation with Gaussian perturbations
 to estimate collision probability.
 """
 
-import math
+
 import numpy as np
-from typing import Dict, Any, Tuple
+from typing import Dict, Any
 from sgp4.api import Satrec, WGS72, jday
 from datetime import datetime, timedelta
 import logging

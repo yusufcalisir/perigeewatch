@@ -77,8 +77,12 @@ def _to_float(val) -> Optional[float]:
         return None
 
 def _map_status(abbrev: str) -> str:
-    if abbrev == "Go": return "GO"
-    if abbrev == "Success": return "SUCCESS"
-    if abbrev == "Hold": return "HOLD"
-    if abbrev == "TBD": return "TBD"
+    if abbrev == "Go":
+        return "GO"
+    if abbrev == "Success":
+        return "SUCCESS"
+    if abbrev == "Hold":
+        return "HOLD"
+    if abbrev == "TBD":
+        return "TBD"
     return "TBD"

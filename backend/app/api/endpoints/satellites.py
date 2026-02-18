@@ -4,6 +4,9 @@ from app.db.session import SessionLocal
 from app.models.satellite import Satellite, ObjectType
 from typing import List, Optional
 from pydantic import BaseModel
+from app.models.tle import TLE
+from datetime import datetime, timedelta
+from app.services.propagation import get_satellite_trajectory
 
 router = APIRouter()
 
@@ -58,8 +61,7 @@ def read_satellites(
     satellites = query.order_by(Satellite.id).offset(skip).limit(limit).all()
     return satellites
 
-from app.models.tle import TLE
-from datetime import datetime
+
 
 
 @router.get("/tles")
@@ -68,7 +70,7 @@ def read_all_tles(limit: int = 5000, db: Session = Depends(get_db)):
     Bulk TLE export for WebWorker SGP4 propagation.
     Returns [{norad_id, name, line1, line2}] for all active satellites.
     """
-    from sqlalchemy import func
+
 
     # Optimized query using DISTINCT ON (PostgreSQL specific)
     # This avoids the expensive subquery aggregation
@@ -77,7 +79,7 @@ def read_all_tles(limit: int = 5000, db: Session = Depends(get_db)):
         .join(TLE, TLE.satellite_id == Satellite.id)
         .distinct(Satellite.id)
         .order_by(Satellite.id, TLE.epoch.desc())
-        .filter(Satellite.is_active == True)
+        .filter(Satellite.is_active)
         .limit(limit)
         .all()
     )
@@ -123,8 +125,7 @@ def read_satellite_tle(norad_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="TLE not found")
     return tle
 
-from app.services.propagation import get_satellite_trajectory
-from datetime import timedelta
+
 
 @router.get("/{norad_id}/orbit")
 def get_satellite_orbit(

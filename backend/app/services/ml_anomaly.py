@@ -16,8 +16,7 @@ import math
 import numpy as np
 import torch
 import torch.nn as nn
-from typing import List, Dict, Any, Tuple
-from datetime import datetime
+from typing import List, Dict, Any
 from sgp4.api import Satrec, WGS72
 import logging
 

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from typing import List, Any, Dict
 from app.services.launch_library import fetch_upcoming_launches
 

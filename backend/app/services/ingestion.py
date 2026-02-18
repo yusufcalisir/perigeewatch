@@ -1,5 +1,5 @@
 import requests
-import os
+
 from sqlalchemy.orm import Session
 from app.models.satellite import Satellite, ObjectType
 from app.models.tle import TLE
@@ -86,9 +86,12 @@ def fetch_and_store_tles(db: Session) -> int:
             epoch_dt = datetime.fromisoformat(params['epoch']) if isinstance(params['epoch'], str) else params['epoch']
 
             obj_type = ObjectType.UNKNOWN
-            if params['object_type'] == 'PAYLOAD': obj_type = ObjectType.PAYLOAD
-            elif params['object_type'] == 'ROCKET BODY': obj_type = ObjectType.ROCKET_BODY
-            elif params['object_type'] == 'DEBRIS': obj_type = ObjectType.DEBRIS
+            if params['object_type'] == 'PAYLOAD':
+                obj_type = ObjectType.PAYLOAD
+            elif params['object_type'] == 'ROCKET BODY':
+                obj_type = ObjectType.ROCKET_BODY
+            elif params['object_type'] == 'DEBRIS':
+                obj_type = ObjectType.DEBRIS
 
             add_parsed_item({
                 "norad_id": params['norad_id'],
@@ -100,19 +103,21 @@ def fetch_and_store_tles(db: Session) -> int:
                 "object_type": obj_type,
                 "source": "spacetrack"
             })
-        except Exception as e:
+        except Exception:
             continue
 
     # 2. Process CelesTrak Data (Fallback/Supplement)
     celestrak_lines = [line.strip() for line in celestrak_lines if line.strip()]
     for i in range(0, len(celestrak_lines), 3):
-        if i+2 >= len(celestrak_lines): break
+        if i+2 >= len(celestrak_lines):
+            break
         
         name = celestrak_lines[i]
         line1 = celestrak_lines[i+1]
         line2 = celestrak_lines[i+2]
         
-        if not (line1.startswith('1 ') and line2.startswith('2 ')): continue
+        if not (line1.startswith('1 ') and line2.startswith('2 ')):
+            continue
 
         try:
             # Quick parse for ID
@@ -126,8 +131,10 @@ def fetch_and_store_tles(db: Session) -> int:
             epoch = jd_to_datetime(satellite.jdsatepoch)
             
             obj_type = ObjectType.PAYLOAD
-            if "DEB" in name: obj_type = ObjectType.DEBRIS
-            elif "R/B" in name: obj_type = ObjectType.ROCKET_BODY
+            if "DEB" in name:
+                obj_type = ObjectType.DEBRIS
+            elif "R/B" in name:
+                obj_type = ObjectType.ROCKET_BODY
             
             add_parsed_item({
                 "norad_id": norad_id,
@@ -168,7 +175,8 @@ def fetch_and_store_tles(db: Session) -> int:
     logger.info("Processing TLE records...")
     for item in parsed_data:
         sat_id = sat_map.get(item["norad_id"])
-        if not sat_id: continue
+        if not sat_id:
+            continue
 
         last_epoch = latest_epoch_map.get(sat_id)
         if last_epoch and item["epoch"] <= last_epoch:

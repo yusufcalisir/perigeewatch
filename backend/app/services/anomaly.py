@@ -10,11 +10,10 @@ Works with real TLE time-series data from the database.
 
 import math
 import numpy as np
-from typing import List, Dict, Any, Optional
-from datetime import datetime, timedelta
+from typing import List, Dict, Any
+from datetime import datetime
 from sgp4.api import Satrec, WGS72
-from sqlalchemy.orm import Session
-from sqlalchemy import desc
+
 import logging
 
 logger = logging.getLogger(__name__)

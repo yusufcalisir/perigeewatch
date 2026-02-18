@@ -12,7 +12,7 @@ This complements SGP4 for scenarios requiring better accuracy:
 
 import math
 import numpy as np
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any
 from datetime import datetime, timedelta
 from sgp4.api import Satrec, WGS72, jday
 
@@ -88,7 +88,6 @@ def gravity_j2(r: np.ndarray) -> np.ndarray:
         return np.zeros(3)
 
     x, y, z = r[0], r[1], r[2]
-    r2 = r_mag ** 2
     r5 = r_mag ** 5
 
     # Two-body acceleration

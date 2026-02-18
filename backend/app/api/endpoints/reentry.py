@@ -64,7 +64,7 @@ def get_reentry_candidates_endpoint(
             (TLE.satellite_id == latest_tle.c.satellite_id)
             & (TLE.epoch == latest_tle.c.max_epoch),
         )
-        .filter(Satellite.is_active == True)
+        .filter(Satellite.is_active)
         .all()
     )
 

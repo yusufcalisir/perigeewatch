@@ -23,7 +23,7 @@ def get_overview_stats(db: Session = Depends(get_db)):
     All values are computed from actual database records.
     """
     total = db.query(func.count(Satellite.id)).scalar() or 0
-    active = db.query(func.count(Satellite.id)).filter(Satellite.is_active == True).scalar() or 0
+    active = db.query(func.count(Satellite.id)).filter(Satellite.is_active).scalar() or 0
 
     payload_count = db.query(func.count(Satellite.id)).filter(
         Satellite.object_type == ObjectType.PAYLOAD

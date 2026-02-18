@@ -13,7 +13,7 @@ import os
 import requests
 import logging
 from typing import Optional, List, Dict, Any
-from datetime import datetime
+
 
 logger = logging.getLogger(__name__)
 
@@ -139,7 +139,7 @@ class SpaceTrackClient:
             resp.raise_for_status()
 
             text = resp.text.strip()
-            lines = [l.strip() for l in text.split('\n') if l.strip()]
+            lines = [line.strip() for line in text.split('\n') if line.strip()]
 
             results = []
             for i in range(0, len(lines), 3):

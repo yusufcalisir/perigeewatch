@@ -10,9 +10,9 @@ based on real TLE parameters (BSTAR, altitude, eccentricity).
 
 import math
 from datetime import datetime, timedelta
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, List
 from sgp4.api import Satrec, WGS72, jday
-import numpy as np
+
 
 EARTH_RADIUS_KM = 6378.137
 MU_EARTH = 398600.4418  # km³/s²

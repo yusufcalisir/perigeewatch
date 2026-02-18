@@ -2,7 +2,7 @@ from sgp4.api import Satrec, WGS72, jday
 from app.models.tle import TLE
 import numpy as np
 from datetime import datetime, timedelta
-from typing import Tuple, Optional, List, Dict, Any
+from typing import Tuple, List, Dict, Any
 import logging
 
 logger = logging.getLogger(__name__)
