@@ -22,6 +22,7 @@ try:
         key_func=get_remote_address,
         default_limits=["100/minute"],
         storage_uri=f"redis://{redis_host}:6379",
+        swallow_errors=True,
     )
     RATE_LIMIT_ENABLED = True
     logger.info("Rate limiting enabled (Redis-backed)")

@@ -8,8 +8,6 @@
 
 **PerigeeWatch** is a modern, high-performance Space Situational Awareness (SSA) platform. It provides real-time satellite tracking, orbital monitoring, conjunction assessment (collision avoidance), and ground station visibility analysis in a stunning 3D visualization.
 
-![PerigeeWatch Dashboard](https://via.placeholder.com/1200x600.png?text=PerigeeWatch+Dashboard+Preview)
-*(Replace this placeholder with a real screenshot of your Cesium globe)*
 
 ---
 
