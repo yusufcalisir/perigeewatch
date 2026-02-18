@@ -1,4 +1,4 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request, Response
 from app.core.config import settings
 from app.api.api import api_router
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,6 +11,12 @@ import os
 logger = logging.getLogger(__name__)
 
 # ── Rate Limiting Setup ──
+RATE_LIMIT_ENABLED = False
+limiter = None
+_rate_limit_exceeded_handler = None
+SlowAPIMiddleware = None
+RateLimitExceeded = None
+
 try:
     from slowapi import Limiter, _rate_limit_exceeded_handler
     from slowapi.util import get_remote_address
@@ -18,18 +24,22 @@ try:
     from slowapi.middleware import SlowAPIMiddleware
 
     redis_host = os.getenv("REDIS_HOST", "localhost")
+    # Robust Limiter Configuration
     limiter = Limiter(
         key_func=get_remote_address,
         default_limits=["100/minute"],
         storage_uri=f"redis://{redis_host}:6379",
-        swallow_errors=True,
-        headers_enabled=False,
+        swallow_errors=True,     # Do not crash if Redis is down
+        headers_enabled=False,   # Do not inject headers to avoid AttributeError on State
+        strategy="fixed-window", # Explicit strategy
     )
     RATE_LIMIT_ENABLED = True
     logger.info("Rate limiting enabled (Redis-backed)")
 except ImportError:
-    RATE_LIMIT_ENABLED = False
     logger.warning("slowapi not installed, rate limiting disabled")
+except Exception as e:
+    RATE_LIMIT_ENABLED = False
+    logger.error(f"Failed to initialize rate limiter: {e}")
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -46,10 +56,11 @@ app = FastAPI(
     },
 )
 
-# Rate limiting middleware
-if RATE_LIMIT_ENABLED:
+# Attach Limiter to app state if enabled
+if RATE_LIMIT_ENABLED and limiter:
     app.state.limiter = limiter
     app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+    # Add middleware immediately after exception handler
     app.add_middleware(SlowAPIMiddleware)
 
 # CORS
@@ -65,8 +76,9 @@ app.add_middleware(
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 @app.get("/")
-def read_root():
-    return {"message": "Welcome to PerigeeWatch API", "status": "active", "version": "2.0.0"}
+def health_check():
+    """Safe health check independent of database."""
+    return {"status": "ok", "service": "PerigeeWatch API"}
 
 @app.get("/health")
 def health_check():
