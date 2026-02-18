@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.db.session import SessionLocal
 from app.services.ingestion import fetch_and_store_tles
+from app.core.config import settings
 from typing import Any
 
 router = APIRouter()
@@ -21,7 +22,7 @@ def ingest_tle_async() -> Any:
     Trigger TLE ingestion asynchronously via Celery worker.
     Requires Redis and Celery worker to be running.
     """
-    if not settings.REDIS_ENABLED:
+    if not getattr(settings, "REDIS_ENABLED", False):
         raise HTTPException(
             status_code=503,
             detail="Redis is disabled. Async tasks unavailable. Use /ingest/tle/sync instead."
