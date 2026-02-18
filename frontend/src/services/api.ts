@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API_URL, WS_URL } from './config';
+import { API_URL } from './config';
 
 export interface Satellite {
     norad_id: number;
@@ -64,40 +64,7 @@ export const fetchAllPositions = async (timestamp?: string): Promise<Position[]>
     }
 };
 
-export const connectToPositionStream = (
-    onMessage: (data: Position[]) => void,
-    interval: number = 2
-): WebSocket => {
-    let wsUrl = WS_URL;
 
-    console.log(`Connecting to WebSocket: ${wsUrl}`);
-    const ws = new WebSocket(wsUrl);
-
-    ws.onopen = () => {
-        console.log('Connected to position stream');
-        ws.send(JSON.stringify({
-            interval: interval,
-            limit: 15000
-        }));
-    };
-
-    ws.onmessage = (event) => {
-        try {
-            const message = JSON.parse(event.data);
-            if (message.type === 'positions') {
-                onMessage(message.data);
-            }
-        } catch (e) {
-            console.error('Error parsing WS message', e);
-        }
-    };
-
-    ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
-    };
-
-    return ws;
-};
 
 export interface OrbitPoint {
     time: string;

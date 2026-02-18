@@ -35,10 +35,14 @@ Opened
 *.log
 debug_*.py
 debug_*.txt
-celerybeat-schedule.*
+*celerybeat-schedule*
 check_env.py
 verify_db_connection.py
 repro_500.py
+reset_db_script.py
+backend/startup_log.txt
+backend/debug_output.txt
+frontend/tsc_error.log
 
 # IDE
 .vscode/

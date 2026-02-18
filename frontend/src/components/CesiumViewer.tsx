@@ -30,7 +30,8 @@ import {
     Quaternion
 } from 'cesium';
 import "cesium/Build/Cesium/Widgets/widgets.css";
-import { fetchAllPositions, Position, connectToPositionStream, fetchSatelliteOrbit, OrbitPoint } from '../services/api';
+import { fetchAllPositions, Position, fetchSatelliteOrbit, OrbitPoint } from '../services/api';
+import { PositionWebSocket } from '../services/websocket';
 import { ConjunctionEvent, getRiskColor, getRiskLevel } from '../services/conjunctions';
 import { computeDensityGrid, getHeatmapColor } from '../utils/densityHeatmap';
 import { detectStarlinkTrains, getTrainPolyline } from '../utils/starlinkTrain';
@@ -668,12 +669,21 @@ const CesiumViewer: React.FC<CesiumViewerProps> = ({
     // ═══════════════════════════════════════════════════
     // WebSocket Position Stream
     // ═══════════════════════════════════════════════════
+    // ═══════════════════════════════════════════════════
+    // WebSocket Position Stream
+    // ═══════════════════════════════════════════════════
     useEffect(() => {
-        const ws = connectToPositionStream((data) => {
-            updateSatelliteVisuals(data);
-        }, 5);
+        const ws = new PositionWebSocket((data, timestamp) => {
+            const mappedData: Position[] = data.map(p => ({
+                ...p,
+                sat_id: p.norad_id, // Use norad_id as sat_id for visualization
+                timestamp: timestamp
+            }));
+            updateSatelliteVisuals(mappedData);
+        });
+        ws.connect();
 
-        return () => { ws.close(); };
+        return () => { ws.disconnect(); };
     }, [updateSatelliteVisuals]);
 
     // ═══════════════════════════════════════════════════

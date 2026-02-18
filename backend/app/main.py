@@ -186,14 +186,18 @@ async def websocket_positions(websocket: WebSocket):
                 logger.info(f"WebSocket runtime error (disconnecting): {e}")
                 break
             except Exception as e:
-                error_str = str(e)
-                if "no close frame received or sent" in error_str or "Unexpected ASGI message" in error_str:
-                    logger.info(f"WebSocket disconnected (runtime error): {e}")
+                error_str = str(e).lower()
+                # Treat all normal disconnect patterns as graceful closure
+                disconnect_patterns = [
+                    "going away", "1000", "1001", "1006",
+                    "no close frame", "unexpected asgi message",
+                    "disconnect", "closed",
+                ]
+                if any(p in error_str for p in disconnect_patterns):
+                    logger.info(f"WebSocket client disconnected gracefully: {e}")
                     break
                 logger.error(f"WebSocket position update error: {e}")
-                # Don't try to send error back, just log. 
-                # If persistent, maybe break? For now, continue but maybe slow down?
-                pass 
+                break  # Don't keep looping on unexpected errors
             finally:
                 db.close()
 
