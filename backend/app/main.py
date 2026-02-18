@@ -37,7 +37,7 @@ app.add_middleware(
 
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 def root_health_check():
     """Safe health check independent of database."""
     return {"status": "ok", "service": "PerigeeWatch API"}

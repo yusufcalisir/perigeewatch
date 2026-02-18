@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <radialGradient id="earth" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1a3a5c"/>
+      <stop offset="100%" stop-color="#0a1628"/>
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="trail" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00d4ff" stop-opacity="0"/>
+      <stop offset="60%" stop-color="#00d4ff" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#00d4ff" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="128" height="128" rx="24" fill="#080c16"/>
+
+  <!-- Earth -->
+  <circle cx="64" cy="64" r="28" fill="url(#earth)" stroke="#1e4a7a" stroke-width="1.5"/>
+
+  <!-- Continent hints -->
+  <path d="M52 52 Q58 48 62 52 Q66 56 60 60 Q54 58 52 52Z" fill="#1e6a5a" opacity="0.5"/>
+  <path d="M68 56 Q74 54 76 58 Q78 64 72 66 Q66 62 68 56Z" fill="#1e6a5a" opacity="0.4"/>
+  <path d="M56 68 Q60 66 64 70 Q62 74 56 72Z" fill="#1e6a5a" opacity="0.35"/>
+
+  <!-- Orbit ring -->
+  <ellipse cx="64" cy="64" rx="48" ry="18" fill="none" stroke="#00d4ff" stroke-width="1.5" stroke-opacity="0.25" transform="rotate(-25 64 64)"/>
+
+  <!-- Orbit trail (bright arc) -->
+  <path d="M 28 50 Q 48 30, 80 38 Q 100 44, 108 58" fill="none" stroke="url(#trail)" stroke-width="2.5" stroke-linecap="round" filter="url(#glow)"/>
+
+  <!-- Satellite body -->
+  <g transform="translate(106, 56) rotate(-25)" filter="url(#glow)">
+    <!-- Solar panels -->
+    <rect x="-12" y="-2" width="8" height="4" rx="1" fill="#3a8fd4"/>
+    <rect x="4" y="-2" width="8" height="4" rx="1" fill="#3a8fd4"/>
+    <!-- Body -->
+    <rect x="-3" y="-3" width="6" height="6" rx="1.5" fill="#e0e8f0"/>
+    <!-- Antenna -->
+    <line x1="0" y1="-3" x2="0" y2="-7" stroke="#c0d0e0" stroke-width="1"/>
+    <circle cx="0" cy="-8" r="1.5" fill="#00d4ff"/>
+  </g>
+
+  <!-- Perigee point marker -->
+  <circle cx="30" cy="56" r="3" fill="#ff6b35" opacity="0.9" filter="url(#glow)"/>
+  <circle cx="30" cy="56" r="5" fill="none" stroke="#ff6b35" stroke-width="0.8" opacity="0.5"/>
+</svg>
