@@ -6,40 +6,9 @@ from fastapi.middleware.gzip import GZipMiddleware
 from datetime import datetime
 import asyncio
 import logging
-import os
+
 
 logger = logging.getLogger(__name__)
-
-# ── Rate Limiting Setup ──
-RATE_LIMIT_ENABLED = False
-limiter = None
-_rate_limit_exceeded_handler = None
-SlowAPIMiddleware = None
-RateLimitExceeded = None
-
-try:
-    from slowapi import Limiter, _rate_limit_exceeded_handler
-    from slowapi.util import get_remote_address
-    from slowapi.errors import RateLimitExceeded
-    from slowapi.middleware import SlowAPIMiddleware
-
-    redis_host = os.getenv("REDIS_HOST", "localhost")
-    # Robust Limiter Configuration
-    limiter = Limiter(
-        key_func=get_remote_address,
-        default_limits=["100/minute"],
-        storage_uri=f"redis://{redis_host}:6379",
-        swallow_errors=True,     # Do not crash if Redis is down
-        headers_enabled=False,   # Do not inject headers to avoid AttributeError on State
-        strategy="fixed-window", # Explicit strategy
-    )
-    RATE_LIMIT_ENABLED = True
-    logger.info("Rate limiting enabled (Redis-backed)")
-except ImportError:
-    logger.warning("slowapi not installed, rate limiting disabled")
-except Exception as e:
-    RATE_LIMIT_ENABLED = False
-    logger.error(f"Failed to initialize rate limiter: {e}")
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -55,13 +24,6 @@ app = FastAPI(
         "name": "MIT",
     },
 )
-
-# Attach Limiter to app state if enabled
-if RATE_LIMIT_ENABLED and limiter:
-    app.state.limiter = limiter
-    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
-    # Add middleware immediately after exception handler
-    app.add_middleware(SlowAPIMiddleware)
 
 # CORS
 app.add_middleware(
@@ -85,6 +47,20 @@ def health_check():
     return {"status": "ok"}
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
+
+@app.get("/{file_path:path}")
+def catch_all_statics(file_path: str):
+    """
+    Fallback for static assets that might erroneously hit the backend.
+    Returns 404 to avoid 401/500 errors.
+    """
+    if any(file_path.endswith(ext) for ext in [".js", ".css", ".png", ".svg", ".ico", ".jpg", ".jpeg", ".woff", ".woff2", ".ttf"]):
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Static file not found on backend")
+    
+    # Optional: You might want to let other paths 404 naturally or handle generic catch-all
+    from fastapi import HTTPException
+    raise HTTPException(status_code=404, detail="Not Found")
 
 
 # ── WebSocket: Real-Time Position Stream ──────────────────
