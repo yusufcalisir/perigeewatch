@@ -819,20 +819,20 @@ const CesiumViewer: React.FC<CesiumViewerProps> = ({
 
             {/* Selection Overlay — Compact info bar */}
             {selectedSat && (
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-md bg-panel/90 border border-cyber-blue/40 rounded-lg p-3 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-4 duration-300 z-50 shadow-2xl">
-                    <div className="flex items-center gap-3">
+                <div className="absolute bottom-12 right-4 w-[380px] bg-panel/90 border border-cyber-blue/40 rounded-lg p-2 backdrop-blur-xl animate-in fade-in slide-in-from-right duration-300 z-50 shadow-2xl">
+                    <div className="flex items-center gap-2">
                         <div className="flex-shrink-0">
-                            <div className="w-3 h-3 bg-cyber-blue rounded-full animate-pulse ring-4 ring-cyber-blue/20" />
+                            <div className="w-2.5 h-2.5 bg-cyber-blue rounded-full animate-pulse ring-4 ring-cyber-blue/20" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <div className="text-[10px] font-bold text-white/60 uppercase tracking-widest">Target Locked</div>
-                            <div className="text-xs font-mono text-white truncate">
+                            <div className="text-[9px] font-bold text-white/60 uppercase tracking-widest">Target Locked</div>
+                            <div className="text-[10px] font-mono text-white truncate">
                                 NORAD #{selectedSat.norad_id} · {selectedSat.alt.toFixed(0)}km · {selectedSat.velocity.toFixed(2)}km/s
                             </div>
                         </div>
                         <div className="flex items-center gap-1.5">
                             <button
-                                className="px-3 py-1.5 bg-cyber-blue/10 border border-cyber-blue/30 text-cyber-blue text-[9px] font-bold rounded hover:bg-cyber-blue/20 transition-colors uppercase tracking-widest"
+                                className="px-2 py-1 bg-cyber-blue/10 border border-cyber-blue/30 text-cyber-blue text-[8px] font-bold rounded hover:bg-cyber-blue/20 transition-colors uppercase tracking-widest"
                                 onClick={() => {
                                     if (onSelectSat) onSelectSat(selectedSat);
                                 }}
@@ -840,7 +840,7 @@ const CesiumViewer: React.FC<CesiumViewerProps> = ({
                                 Detail
                             </button>
                             <button
-                                className="px-2 py-1.5 bg-white/5 border border-white/10 text-white/40 text-[9px] font-bold rounded hover:bg-white/10 transition-colors"
+                                className="px-1.5 py-1 bg-white/5 border border-white/10 text-white/40 text-[8px] font-bold rounded hover:bg-white/10 transition-colors"
                                 onClick={() => { setSelectedSat(null); if (onSelectSat) onSelectSat(null); }}
                             >
                                 ✕

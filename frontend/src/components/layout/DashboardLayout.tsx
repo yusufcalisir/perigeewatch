@@ -45,10 +45,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 {/* Maximize Toggle */}
                 <button
                     onClick={() => onToggleMaximize?.()}
-                    className="absolute bottom-4 right-4 z-50 bg-background/60 backdrop-blur-md border border-white/10 p-2.5 rounded-full text-white/50 hover:text-cyber-blue shadow-lg transition-all active:scale-95"
+                    className="absolute bottom-4 right-4 z-50 bg-background/60 backdrop-blur-md border border-white/10 p-1.5 rounded-full text-white/50 hover:text-cyber-blue shadow-lg transition-all active:scale-95"
                     title={isMaximized ? "Show Panels" : "Maximize Globe"}
                 >
-                    {isMaximized ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+                    {isMaximized ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
                 </button>
             </div>
 

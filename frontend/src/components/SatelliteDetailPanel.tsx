@@ -259,7 +259,7 @@ const SatelliteDetailPanel: React.FC<SatelliteDetailPanelProps> = ({
                                     <div className="w-1.5 h-1.5 bg-green-400 rounded-full flex-shrink-0" />
                                     <div className="flex-1 min-w-0">
                                         <div className="text-[9px] font-mono text-white/60">
-                                            {new Date(iv.start).toLocaleTimeString()} — {new Date(iv.end).toLocaleTimeString()}
+                                            {new Date(iv.aos).toLocaleTimeString()} — {new Date(iv.los).toLocaleTimeString()}
                                         </div>
                                         <div className="text-[8px] text-white/30">
                                             Max El: {iv.max_elevation?.toFixed(1)}° · {Math.round(iv.duration_s)}s

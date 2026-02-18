@@ -98,10 +98,15 @@ def read_all_tles(limit: int = 5000, db: Session = Depends(get_db)):
 
 @router.get("/{norad_id}", response_model=SatelliteOut)
 def read_satellite(norad_id: int, db: Session = Depends(get_db)):
-    satellite = db.query(Satellite).filter(Satellite.norad_id == norad_id).first()
-    if satellite is None:
-        raise HTTPException(status_code=404, detail="Satellite not found")
-    return satellite
+    try:
+        satellite = db.query(Satellite).filter(Satellite.norad_id == norad_id).first()
+        if satellite is None:
+            raise HTTPException(status_code=404, detail="Satellite not found")
+        return satellite
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
 class TLEOut(BaseModel):
     line1: str

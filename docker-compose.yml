@@ -11,6 +11,7 @@ services:
       - POSTGRES_USER=perigee
       - POSTGRES_PASSWORD=secure_password
       - POSTGRES_DB=perigee_watch
+      - DATABASE_URL=${DATABASE_URL}
       - JWT_SECRET=${JWT_SECRET:-perigee-watch-change-me}
     depends_on:
       db:
@@ -31,7 +32,9 @@ services:
       - REDIS_HOST=redis
       - POSTGRES_USER=perigee
       - POSTGRES_PASSWORD=secure_password
+      - POSTGRES_PASSWORD=secure_password
       - POSTGRES_DB=perigee_watch
+      - DATABASE_URL=${DATABASE_URL}
     depends_on:
       db:
         condition: service_healthy
@@ -49,7 +52,9 @@ services:
       - REDIS_HOST=redis
       - POSTGRES_USER=perigee
       - POSTGRES_PASSWORD=secure_password
+      - POSTGRES_PASSWORD=secure_password
       - POSTGRES_DB=perigee_watch
+      - DATABASE_URL=${DATABASE_URL}
     depends_on:
       - worker
 

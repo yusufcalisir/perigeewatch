@@ -708,7 +708,7 @@ function AppContent() {
 
             {/* Satellite Detail Panel (right side overlay) */}
             {detailSat && !compareSatA && (
-                <div className="absolute top-16 right-4 bottom-4 w-[380px] z-40 animate-in slide-in-from-right duration-300">
+                <div className="absolute top-32 right-4 bottom-32 w-[380px] z-40 animate-in slide-in-from-right duration-300">
                     <div className="h-full rounded-lg border border-white/10 overflow-hidden shadow-2xl">
                         <SatelliteDetailPanel
                             noradId={detailSat.norad_id}
@@ -726,7 +726,7 @@ function AppContent() {
 
             {/* Satellite Comparison Panel */}
             {compareSatA && compareSatB && (
-                <div className="absolute top-16 right-4 bottom-4 w-[420px] z-40 animate-in slide-in-from-right duration-300">
+                <div className="absolute top-32 right-4 bottom-32 w-[420px] z-40 animate-in slide-in-from-right duration-300">
                     <div className="h-full rounded-lg border border-white/10 overflow-hidden shadow-2xl">
                         <SatelliteComparePanel
                             satA={{ noradId: compareSatA.norad_id, lat: compareSatA.lat, lon: compareSatA.lon, alt: compareSatA.alt, velocity: compareSatA.velocity }}
@@ -739,7 +739,7 @@ function AppContent() {
 
             {/* Watchlist Panel */}
             {showWatchlist && (
-                <div className="absolute top-16 right-4 bottom-4 w-[320px] z-40 animate-in slide-in-from-right duration-300">
+                <div className="absolute top-32 right-4 bottom-32 w-[320px] z-40 animate-in slide-in-from-right duration-300">
                     <div className="h-full rounded-lg border border-white/10 overflow-hidden shadow-2xl">
                         <WatchlistPanel
                             watchlist={new Set(watchlist)}
@@ -784,13 +784,13 @@ function AppContent() {
             )}
 
             {/* Keyboard Shortcuts Legend (bottom-right) */}
-            <div className="absolute bottom-4 right-4 z-50 hidden lg:flex items-center gap-3 text-[10px] font-mono text-white/30 uppercase tracking-wider">
-                <span className="flex items-center gap-1.5"><span className="px-1.5 py-0.5 bg-white/5 border border-white/10 rounded text-cyber-blue">/</span> search</span>
-                <span className="flex items-center gap-1.5"><span className="px-1.5 py-0.5 bg-white/5 border border-white/10 rounded text-cyber-blue">R</span> reset</span>
-                <span className="flex items-center gap-1.5"><span className="px-1.5 py-0.5 bg-white/5 border border-white/10 rounded text-cyber-blue">H</span> hud</span>
-                <span className="flex items-center gap-1.5"><span className="px-1.5 py-0.5 bg-white/5 border border-white/10 rounded text-cyber-blue">C</span> cinema</span>
-                <span className="flex items-center gap-1.5"><span className="px-1.5 py-0.5 bg-white/5 border border-white/10 rounded text-cyber-blue">M</span> sound</span>
-                <span className="flex items-center gap-1.5"><span className="px-1.5 py-0.5 bg-white/5 border border-white/10 rounded text-cyber-blue">F</span> filter</span>
+            <div className="absolute bottom-4 right-12 z-50 hidden lg:flex items-center gap-2 text-[9px] font-mono text-white/30 uppercase tracking-wider">
+                <span className="flex items-center gap-1"><span className="px-1 py-0 bg-white/5 border border-white/10 rounded text-cyber-blue">/</span> search</span>
+                <span className="flex items-center gap-1"><span className="px-1 py-0 bg-white/5 border border-white/10 rounded text-cyber-blue">R</span> reset</span>
+                <span className="flex items-center gap-1"><span className="px-1 py-0 bg-white/5 border border-white/10 rounded text-cyber-blue">H</span> hud</span>
+                <span className="flex items-center gap-1"><span className="px-1 py-0 bg-white/5 border border-white/10 rounded text-cyber-blue">C</span> cinema</span>
+                <span className="flex items-center gap-1"><span className="px-1 py-0 bg-white/5 border border-white/10 rounded text-cyber-blue">M</span> sound</span>
+                <span className="flex items-center gap-1"><span className="px-1 py-0 bg-white/5 border border-white/10 rounded text-cyber-blue">F</span> filter</span>
             </div>
         </DashboardLayout>
     )
