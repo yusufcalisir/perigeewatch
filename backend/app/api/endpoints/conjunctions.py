@@ -24,13 +24,20 @@ def get_db():
 # Initialize Redis client
 
 # Initialize Redis client
-redis_client = redis.Redis(
-    host=settings.REDIS_HOST, 
-    port=settings.REDIS_PORT, 
-    db=0, 
-    decode_responses=True,
-    socket_connect_timeout=1
-)
+# Initialize Redis client
+redis_client = None
+if settings.REDIS_ENABLED:
+    try:
+        redis_client = redis.Redis(
+            host=settings.REDIS_HOST, 
+            port=settings.REDIS_PORT, 
+            db=0, 
+            decode_responses=True,
+            socket_connect_timeout=1
+        )
+    except Exception as e:
+        print(f"Failed to initialize Redis client: {e}")
+        redis_client = None
 
 @router.get("/")
 def get_conjunctions(
@@ -48,12 +55,13 @@ def get_conjunctions(
     
     # ── Redis Cache Check ──
     cache_key = f"conjunctions:{timestamp.strftime('%Y%m%d%H%M')}:{threshold_km}:{limit}"
-    try:
-        cached_data = redis_client.get(cache_key)
-        if cached_data:
-            return json.loads(cached_data)
-    except Exception as e:
-        print(f"Redis cache error: {e}")
+    if settings.REDIS_ENABLED and redis_client:
+        try:
+            cached_data = redis_client.get(cache_key)
+            if cached_data:
+                return json.loads(cached_data)
+        except Exception as e:
+            print(f"Redis cache error: {e}")
 
     # ── Compute ──
     events = detect_conjunctions(
@@ -64,9 +72,11 @@ def get_conjunctions(
     )
 
     # ── Redis Cache Set ──
-    try:
-        redis_client.setex(cache_key, 300, json.dumps(events)) # 300s = 5m
-    except Exception as e:
-        print(f"Redis cache set error: {e}")
+    # ── Redis Cache Set ──
+    if settings.REDIS_ENABLED and redis_client:
+        try:
+            redis_client.setex(cache_key, 300, json.dumps(events)) # 300s = 5m
+        except Exception as e:
+            print(f"Redis cache set error: {e}")
 
     return events

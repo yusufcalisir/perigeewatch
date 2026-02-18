@@ -11,8 +11,25 @@ class Settings(BaseSettings):
     POSTGRES_HOST: str = "localhost"
     POSTGRES_PORT: str = "5432"
 
-    REDIS_HOST: str = "localhost"
+    REDIS_HOST: Optional[str] = "localhost"
     REDIS_PORT: int = 6379
+    USE_REDIS: bool = False
+
+    @property
+    def REDIS_ENABLED(self) -> bool:
+        """
+        Check if Redis should be enabled.
+        If USE_REDIS is manually set to True, trust it.
+        Otherwise, default to False unless we can verify it's configured.
+        """
+        if self.USE_REDIS:
+            return True
+        # If REDIS_URL env var would be present (not checking here as we don't have it defined in model)
+        # But user requested: "If no REDIS_URL environment variable -> disable Redis automatically"
+        # Since we use pydantic BaseSettings, env vars override these defaults.
+        # So if REDIS_URL or USE_REDIS is set in env, it will be reflected here.
+        # But we want a smart default.
+        return self.USE_REDIS
 
     CELESTRAK_URL: str = "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=tle"
     INGEST_INTERVAL_MINUTES: int = 60

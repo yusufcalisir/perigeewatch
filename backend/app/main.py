@@ -174,6 +174,10 @@ async def websocket_positions(websocket: WebSocket):
                 logger.info(f"WebSocket runtime error (disconnecting): {e}")
                 break
             except Exception as e:
+                error_str = str(e)
+                if "no close frame received or sent" in error_str or "Unexpected ASGI message" in error_str:
+                    logger.info(f"WebSocket disconnected (runtime error): {e}")
+                    break
                 logger.error(f"WebSocket position update error: {e}")
                 # Don't try to send error back, just log. 
                 # If persistent, maybe break? For now, continue but maybe slow down?
@@ -185,12 +189,9 @@ async def websocket_positions(websocket: WebSocket):
 
     except WebSocketDisconnect:
         logger.info("WebSocket disconnected")
-        try:
-            manager.disconnect(websocket)
-        except ValueError:
-            pass # Already disconnected
     except Exception as e:
         logger.error(f"WebSocket unhandled error: {e}")
+    finally:
         try:
             manager.disconnect(websocket)
         except ValueError:

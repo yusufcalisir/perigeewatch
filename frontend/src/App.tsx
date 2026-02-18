@@ -96,6 +96,7 @@ function AppContent() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [flyToTarget, setFlyToTarget] = useState<{ lat: number, lon: number, alt: number } | null>(null)
     const [showWatchlist, setShowWatchlist] = useState(false)
+    const [isMaximized, setIsMaximized] = useState(false)
 
     // ── Mobile Navigation ──
     const MOBILE_MODULES = [
@@ -119,13 +120,39 @@ function AppContent() {
         const isCurrentlyActive = activePanelId === id
         if (isCurrentlyActive) {
             setActivePanelId(null)
-            setLeftOpen(false)
+            // On desktop, keep the sidebar open with headers
+            if (isMobile) {
+                setLeftOpen(false)
+            }
         } else {
             setActivePanelId(id)
             setLeftOpen(true)
+            setIsMaximized(false) // Un-maximize if a panel is opened
         }
         setIsMobileMenuOpen(false)
         if (soundEnabled) playClick()
+    }
+
+    const handleToggleMaximize = () => {
+        const targetState = !isMaximized;
+        setIsMaximized(targetState);
+
+        if (targetState) {
+            setLeftOpen(false);
+            // Trigger Browser Fullscreen
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen().catch(e => {
+                    console.error(`Error attempting to enable full-screen mode: ${e.message}`);
+                });
+            }
+        } else {
+            // Exit Browser Fullscreen
+            if (document.exitFullscreen && document.fullscreenElement) {
+                document.exitFullscreen().catch(e => {
+                    console.error(`Error attempting to exit full-screen mode: ${e.message}`);
+                });
+            }
+        }
     }
 
     const toggleMobileMenu = () => {
@@ -135,6 +162,7 @@ function AppContent() {
         // On mobile, if we're opening the menu, we must open the drawer
         if (targetMenuState) {
             setLeftOpen(true)
+            setIsMaximized(false)
         } else if (!activePanelId) {
             // If we are closing the menu and no module is selected, hide the drawer
             setLeftOpen(false)
@@ -147,6 +175,19 @@ function AppContent() {
         setIsMobileMenuOpen(false)
         if (soundEnabled) playClick()
     }
+
+    // ── Fullscreen Sync ──
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            const isActuallyFullscreen = !!document.fullscreenElement;
+            if (isActuallyFullscreen !== isMaximized) {
+                setIsMaximized(isActuallyFullscreen);
+            }
+        };
+
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    }, [isMaximized]);
 
     // ═══════════════════════════════════════════════════
     // Keyboard Shortcuts
@@ -164,6 +205,7 @@ function AppContent() {
         },
         onToggleHUD: () => {
             setLeftOpen(prev => !prev)
+            setIsMaximized(false) // Un-maximize when toggling HUD
             if (soundEnabled) playClick()
         },
         onEscape: () => {
@@ -354,6 +396,8 @@ function AppContent() {
             }
             leftOpen={leftOpen}
             setLeftOpen={setLeftOpen}
+            isMaximized={isMaximized}
+            onToggleMaximize={handleToggleMaximize}
             leftPanel={
                 <div className="flex flex-col h-full gap-2 overflow-y-auto scrollbar-thin pb-4">
                     {/* Mobile Navigation Overlay */}

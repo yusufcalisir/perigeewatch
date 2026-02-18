@@ -16,6 +16,8 @@ interface DashboardLayoutProps {
     setLeftOpen: (open: boolean) => void;
     rightOpen?: boolean;
     setRightOpen?: (open: boolean) => void;
+    isMaximized?: boolean;
+    onToggleMaximize?: () => void;
 }
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({
@@ -26,22 +28,23 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     leftOpen,
     setLeftOpen,
     rightOpen,
-    setRightOpen
+    setRightOpen,
+    isMaximized = false,
+    onToggleMaximize
 }) => {
-    const [isMaximized, setIsMaximized] = useState(false);
 
     return (
         <div className="fixed inset-0 w-screen h-screen bg-background overflow-hidden text-white font-sans selection:bg-cyber-blue/30 flex flex-col md:block">
             {/* Globe Layer */}
             <div className={cn(
                 "relative md:absolute inset-0 transition-all duration-500 ease-in-out",
-                (leftOpen || rightOpen) && !isMaximized ? "h-[40vh] md:h-full" : "h-full"
+                (leftOpen || rightOpen) && !isMaximized ? "h-[40vh] md:h-full" : "h-full w-full"
             )}>
                 {children}
 
                 {/* Maximize Toggle */}
                 <button
-                    onClick={() => setIsMaximized(!isMaximized)}
+                    onClick={() => onToggleMaximize?.()}
                     className="absolute bottom-4 right-4 z-50 bg-background/60 backdrop-blur-md border border-white/10 p-2.5 rounded-full text-white/50 hover:text-cyber-blue shadow-lg transition-all active:scale-95"
                     title={isMaximized ? "Show Panels" : "Maximize Globe"}
                 >
@@ -50,11 +53,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             </div>
 
             {/* Header Layer */}
-            <div className="absolute top-0 left-0 right-0 z-50 pointer-events-none">
-                <div className="pointer-events-auto">
-                    {header}
+            {!isMaximized && (
+                <div className="absolute top-0 left-0 right-0 z-50 pointer-events-none">
+                    <div className="pointer-events-auto">
+                        {header}
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Panels Layer */}
             <div className={cn(

@@ -9,11 +9,16 @@ from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
-celery_app = Celery(
-    "perigeewatch",
-    broker=f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}/0",
-    backend=f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}/1",
-)
+celery_app = Celery("perigeewatch")
+if settings.REDIS_ENABLED:
+    celery_app.conf.broker_url = f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}/0"
+    celery_app.conf.result_backend = f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}/1"
+else:
+    # Use memory or filesystem for local dev without Redis, or just disable background tasks
+    logger.warning("Redis not enabled. Background tasks will not run properly.")
+    celery_app.conf.broker_url = "memory://"
+    celery_app.conf.result_backend = "cache+memory://"
+    celery_app.conf.task_always_eager = True # Execute tasks locally/sync if no broker
 
 celery_app.conf.update(
     task_serializer="json",

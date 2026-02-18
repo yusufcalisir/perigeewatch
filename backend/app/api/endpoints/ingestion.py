@@ -21,6 +21,12 @@ def ingest_tle_async() -> Any:
     Trigger TLE ingestion asynchronously via Celery worker.
     Requires Redis and Celery worker to be running.
     """
+    if not settings.REDIS_ENABLED:
+        raise HTTPException(
+            status_code=503,
+            detail="Redis is disabled. Async tasks unavailable. Use /ingest/tle/sync instead."
+        )
+
     try:
         from app.worker import ingest_tles_task
         task = ingest_tles_task.delay()
