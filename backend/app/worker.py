@@ -44,6 +44,13 @@ def setup_periodic_tasks(sender, **kwargs):
         name='Detect Conjunctions every 15 mins'
     )
 
+    # Cleanup database every 5 hours to stay within Neon free tier limits
+    sender.add_periodic_task(
+        5.0 * 60.0 * 60.0,  # 5 hours
+        cleanup_database_task.s(), 
+        name='Cleanup DB every 5 hours'
+    )
+
 @celery_app.task(name="detect_conjunctions")
 def detect_conjunctions_task(threshold_km: float = 50.0):
     """Run conjunction analysis for all satellites."""
@@ -134,6 +141,51 @@ def update_positions_task():
         return {"propagated": len(results)}
     except Exception as e:
         logger.error(f"Propagation task failed: {e}")
+        raise
+    finally:
+        db.close()
+
+
+@celery_app.task(name="cleanup_database")
+def cleanup_database_task():
+    """Purge all satellite data to stay within Neon free tier storage limits.
+    
+    Deletes in FK-safe order: TLE, Transponder, ConjunctionEvent, then Satellite.
+    After cleanup, the next scheduled ingestion task will repopulate fresh data.
+    """
+    from app.db.session import SessionLocal
+    from app.models.tle import TLE
+    from app.models.satellite import Satellite
+    from app.models.conjunction_event import ConjunctionEvent
+    from app.models.transponder import Transponder
+
+    db = SessionLocal()
+    try:
+        # Delete children first (FK constraints)
+        tle_count = db.query(TLE).delete()
+        transponder_count = db.query(Transponder).delete()
+        conjunction_count = db.query(ConjunctionEvent).delete()
+        satellite_count = db.query(Satellite).delete()
+
+        db.commit()
+
+        total = tle_count + transponder_count + conjunction_count + satellite_count
+        logger.info(
+            f"Database cleanup complete. Deleted: "
+            f"{satellite_count} satellites, {tle_count} TLEs, "
+            f"{transponder_count} transponders, {conjunction_count} conjunction events. "
+            f"Total: {total} rows."
+        )
+        return {
+            "deleted_satellites": satellite_count,
+            "deleted_tles": tle_count,
+            "deleted_transponders": transponder_count,
+            "deleted_conjunctions": conjunction_count,
+            "total_deleted": total,
+        }
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Database cleanup failed: {e}")
         raise
     finally:
         db.close()
