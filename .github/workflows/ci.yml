@@ -65,6 +65,7 @@ jobs:
           POSTGRES_PASSWORD: test_password
           POSTGRES_DB: perigee_watch_test
           REDIS_HOST: localhost
+          PYTHONPATH: .
         run: pytest --cov=app --cov-report=term-missing -v
 
   frontend-build:
